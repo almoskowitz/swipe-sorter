@@ -32,8 +32,8 @@ function ImagePreview({ file }: { file: FileEntry }) {
 function PdfPreview({ file }: { file: FileEntry }) {
   return (
     <iframe
-      src={`${fileUrl(file.fullPath)}#toolbar=0&navpanes=0`}
-      style={{ width: '100%', height: '100%', border: 'none' }}
+      src={`${fileUrl(file.fullPath)}#toolbar=0&navpanes=0&zoom=page-fit`}
+      style={{ width: '100%', height: '100%', border: 'none', background: '#fff' }}
       title={file.name}
     />
   )

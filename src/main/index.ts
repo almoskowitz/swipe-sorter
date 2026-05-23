@@ -1,7 +1,11 @@
-import { app, BrowserWindow, protocol } from 'electron'
+import { app, BrowserWindow, protocol, net } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import { registerIpcHandlers } from './ipc'
+
+protocol.registerSchemesAsPrivileged([
+  { scheme: 'localfile', privileges: { secure: true, supportFetchAPI: true, stream: true } }
+])
 
 function createWindow(): void {
   const mainWindow = new BrowserWindow({
@@ -34,9 +38,10 @@ app.whenReady().then(() => {
     optimizer.watchWindowShortcuts(window)
   })
 
-  protocol.registerFileProtocol('localfile', (request, callback) => {
-    const filePath = decodeURIComponent(request.url.replace('localfile://', ''))
-    callback({ path: filePath })
+  protocol.handle('localfile', (request) => {
+    const { pathname } = new URL(request.url)
+    const filePath = decodeURIComponent(pathname)
+    return net.fetch(`file://${filePath}`)
   })
 
   registerIpcHandlers()
